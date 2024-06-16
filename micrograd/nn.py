@@ -2,7 +2,20 @@ import numpy as np
 from micrograd.engine import Value
 
 
-class Neuron():
+class Module():
+    def __init__(self):
+        pass
+    
+    def zero_grad(self):
+        for p in self.parameters():
+            p.grad = 0.0
+
+    def update_parameters(self, lr):
+        for p in self.parameters():
+            p.data -= p.grad*lr
+
+
+class Neuron(Module):
     def __init__(self, nin):
         """ nin is a scalar which denotes the dimensionality of the vector (i.e num features)"""
         self.weights = [Value(np.random.uniform(-1, 1)) for _ in range(nin)]
@@ -16,7 +29,7 @@ class Neuron():
        return self.weights + [self.bias]
 
 
-class Layer():
+class Layer(Module):
     def __init__(self, nin, nout):
         """ nout is a scalar which denotes the number output neurons for the layer """
         self.layer = [Neuron(nin) for _ in range(nout)]
@@ -29,7 +42,7 @@ class Layer():
         parameters = [p for neuron in self.layer for p in neuron.parameters()]
         return parameters
 
-class Module():
+class MLP(Module):
     def __init__(self, nin, nouts):
         """ nouts is a list which denotes the number of output neurons for each layer; where num_layers == len(list) """
         self.nouts = [nin] + nouts
@@ -48,11 +61,3 @@ class Module():
         for layer in self.layers:
             parameters.extend([layer for layer in layer.parameters()])
         return parameters
-
-    def zero_grad(self):
-        for p in self.parameters():
-            p.grad = 0.0
-
-    def update_parameters(self, lr):
-        for p in self.parameters():
-            p.data -= p.grad*lr

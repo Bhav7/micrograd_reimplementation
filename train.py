@@ -4,7 +4,7 @@ from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from micrograd.nn import Module
+from micrograd.nn import MLP
 
 digits = load_digits()
 data = digits.data
@@ -16,7 +16,7 @@ X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.3,
 
 print(len(X_train), len(X_test))
 
-model = Module(data.shape[-1], [10, 10, 10])
+model = MLP(data.shape[-1], [10, 10, 10])
 
 print(f"The number of trainable params in {len(model.parameters())}")
 
